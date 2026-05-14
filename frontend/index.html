@@ -12,7 +12,7 @@
       body { font-family: 'Fira Code', monospace; }
       input[type="checkbox"] { appearance: none; }
       input[type="checkbox"]:checked::after {
-        content: ""; position: absolute; top: 1px; left: 5px; width: 5px; height: 8px;
+        content: ""; position: absolute; top: 2px; left: 4px; width: 5px; height: 8px;
         border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
       }
     </style>
@@ -67,20 +67,50 @@
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
           checkbox.checked = task.completed;
-          checkbox.className = "relative shrink-0 w-[18px] height-[18px] rounded-full border-2 border-[#64748b] bg-transparent cursor-pointer mr-[15px] checked:bg-[#ff6347] checked:border-[#ff6347]";
+          checkbox.className = "relative shrink-0 w-[18px] h-[18px] rounded-full border-2 border-[#64748b] bg-transparent cursor-pointer mr-[15px] checked:bg-[#ff6347] checked:border-[#ff6347]";
           checkbox.addEventListener("change", () => changerEtat(task.id));
 
           const span = document.createElement("span");
           span.textContent = task.title;
           span.className = `flex-1 ${task.completed ? 'line-through text-[#777]' : ''}`;
 
+          // btn Delete
           const btnSupp = document.createElement("button");
-          btnSupp.textContent = "x";
-          btnSupp.className = "bg-transparent border-none text-[#d60a0a] text-lg cursor-pointer px-2 ml-[15px] rounded hover:bg-white transition-colors shrink-0";
+
+          const deleteImg = document.createElement("img");
+          deleteImg.src = "assets/delete.png";
+          deleteImg.alt = "supprimer";
+          deleteImg.className = "w-5 h-5";
+
+          btnSupp.appendChild(deleteImg);
+
+          btnSupp.className = "ml-[15px] hover:scale-110 transition-transform shrink-0";
+
           btnSupp.addEventListener("click", () => supprimerTache(task.id));
 
-          li.append(checkbox, span, btnSupp);
+
+          // btn Edit
+          const btnEdit = document.createElement("button");
+
+          const editImg = document.createElement("img");
+          editImg.src = "assets/modify.png";
+          editImg.alt = "modifier";
+          editImg.className = "w-5 h-5";
+
+          btnEdit.appendChild(editImg);
+
+          btnEdit.className = "flex mx-r hover:scale-110 transition-transform";
+
+          btnEdit.addEventListener("click", () => {
+            const nouveauTitre = prompt("Modifier la tâche :", task.title);
+          });
+
+          li.append(checkbox, span, btnEdit, btnSupp);
           todoList.appendChild(li);
+
+
+
+
         });
 
         counter.textContent = tasks.filter(t => !t.completed).length;
