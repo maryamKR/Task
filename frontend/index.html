@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet" />
+    <style>
+      body { font-family: 'Fira Code', monospace; }
+      input[type="checkbox"] { appearance: none; }
+      input[type="checkbox"]:checked::after {
+        content: ""; position: absolute; top: 1px; left: 5px; width: 5px; height: 8px;
+        border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+      }
+    </style>
+  </head>
+  <body class="bg-[#0f0f0f] text-[#ff6347] flex justify-center p-[90px]">
+    <div class="w-full max-w-[500px]">
+      <header class="mb-6">
+        <h1 class="text-3xl font-bold">Gestionnaire de Tâches</h1>
+        <p>Tâches restantes : <span id="counter" class="font-bold text-[#ff6347]">0</span></p>
+      </header>
+
+      <form id="task-form" class="flex gap-[10px] mb-5">
+        <input type="text" placeholder="Nouvelle tâche..." 
+               class="flex-1 bg-transparent border border-[#333] text-[#ff6347] p-3 outline-none" />
+        <button type="submit" class="bg-[#ff6347] text-[#0f0f0f] rounded-lg px-5 font-bold hover:bg-[#ff4500] transition-colors">
+          Ajouter
+        </button>
+      </form>
+
+      <nav id="filters" class="flex gap-[10px] mb-5">
+        <button class="btn-filter active bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">Toutes</button>
+        <button class="btn-filter bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">Actives</button>
+        <button class="btn-filter bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">Terminées</button>
+      </nav>
+
+      <ul id="todo-list" class="list-none p-0"></ul>
+    </div>
+
+    <script>
+      let tasks = [
+        { id: 0, title: "Open the project", completed: false },
+        { id: 1, title: "Start the project", completed: true },
+        { id: 2, title: "Finish the project", completed: false },
+      ];
+
+      const taskForm = document.getElementById("task-form");
+      const taskInput = taskForm.querySelector("input");
+      const todoList = document.getElementById("todo-list");
+      const counter = document.getElementById("counter");
+      const filterButtons = document.querySelectorAll(".btn-filter");
+      let currentFilter = "all";
+
+      function afficherTaches() {
+        todoList.innerHTML = "";
+        tasks.forEach(task => {
+          if (currentFilter === "active" && task.completed) return;
+          if (currentFilter === "completed" && !task.completed) return;
+
+          const li = document.createElement("li");
+          li.className = `flex items-center bg-[#1a1a1a] border border-[#333] rounded-[10px] p-[15px_20px] mb-[10px] text-[#c0a39e] hover:bg-[#222] transition-colors ${task.completed ? 'opacity-55 border-[#2a1a1a] bg-[#1f1414]' : ''}`;
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = task.completed;
+          checkbox.className = "relative shrink-0 w-[18px] height-[18px] rounded-full border-2 border-[#64748b] bg-transparent cursor-pointer mr-[15px] checked:bg-[#ff6347] checked:border-[#ff6347]";
+          checkbox.addEventListener("change", () => changerEtat(task.id));
+
+          const span = document.createElement("span");
+          span.textContent = task.title;
+          span.className = `flex-1 ${task.completed ? 'line-through text-[#777]' : ''}`;
+
+          const btnSupp = document.createElement("button");
+          btnSupp.textContent = "x";
+          btnSupp.className = "bg-transparent border-none text-[#d60a0a] text-lg cursor-pointer px-2 ml-[15px] rounded hover:bg-white transition-colors shrink-0";
+          btnSupp.addEventListener("click", () => supprimerTache(task.id));
+
+          li.append(checkbox, span, btnSupp);
+          todoList.appendChild(li);
+        });
+
+        counter.textContent = tasks.filter(t => !t.completed).length;
+      }
+
+      function changerEtat(id) {
+        tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+        afficherTaches();
+      }
+
+      function supprimerTache(id) {
+        tasks = tasks.filter(t => t.id !== id);
+        afficherTaches();
+      }
+
+      taskForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!taskInput.value.trim()) return;
+        tasks.push({ id: Date.now(), title: taskInput.value.trim(), completed: false });
+        taskInput.value = "";
+        afficherTaches();
+      });
+
+      filterButtons.forEach((btn, idx) => {
+        btn.addEventListener("click", () => {
+          filterButtons.forEach(b => b.classList.remove("ring-2", "ring-white")); 
+          btn.classList.add("ring-2", "ring-white"); 
+          currentFilter = ["all", "active", "completed"][idx];
+          afficherTaches();
+        });
+      });
+
+      afficherTaches();
+    </script>
+  </body>
+</html>
