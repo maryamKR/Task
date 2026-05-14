@@ -1,62 +1,76 @@
 const db = require("../db");
 
 // CREATE TASK
-exports.createTask = (req, res) => {
-  const { title, description } = req.body;
+exports.createTask = async (req, res) => {
+  try {
+    const { title, description } = req.body;
 
-  const sql = "INSERT INTO tasks (title, description) VALUES (?, ?)";
-  db.query(sql, [title, description], (err, result) => {
-    if (err) return res.status(500).json(err);
+    const [result] = await db.query(
+      "INSERT INTO tasks (title, description) VALUES (?, ?)",
+      [title, description]
+    );
 
     res.status(201).json({
       message: "Task created",
       id: result.insertId,
     });
-  });
-};//
-
-// GET ALL TASKS
-exports.getAllTasks = (req, res) => {
-  db.query("SELECT * FROM tasks", (err, results) => {
-    if (err) return res.status(500).json(err);
-
-    res.json(results);
-  });
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
-// GET ONE TASK
-exports.getTaskById = (req, res) => {
-  const id = req.params.id;
+// GET ALL TASKS
+exports.getAllTasks = async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM tasks");
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
 
-  db.query("SELECT * FROM tasks WHERE id = ?", [id], (err, results) => {
-    if (err) return res.status(500).json(err);
+// GET TASK BY ID
+exports.getTaskById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-    res.json(results[0]);
-  });
+    const [rows] = await db.query(
+      "SELECT * FROM tasks WHERE id = ?",
+      [id]
+    );
+
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
 // UPDATE TASK
-exports.updateTask = (req, res) => {
-  const id = req.params.id;
-  const { title, description, status } = req.body;
+exports.updateTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, status } = req.body;
 
-  const sql =
-    "UPDATE tasks SET title=?, description=?, status=? WHERE id=?";
-
-  db.query(sql, [title, description, status, id], (err) => {
-    if (err) return res.status(500).json(err);
+    await db.query(
+      "UPDATE tasks SET title=?, description=?, status=? WHERE id=?",
+      [title, description, status, id]
+    );
 
     res.json({ message: "Task updated" });
-  });
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
 // DELETE TASK
-exports.deleteTask = (req, res) => {
-  const id = req.params.id;
+exports.deleteTask = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-  db.query("DELETE FROM tasks WHERE id=?", [id], (err) => {
-    if (err) return res.status(500).json(err);
+    await db.query("DELETE FROM tasks WHERE id=?", [id]);
 
     res.json({ message: "Task deleted" });
-  });
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
