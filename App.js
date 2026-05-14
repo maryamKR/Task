@@ -1,17 +1,22 @@
-//  create a server
-const express = require('express');
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+require("dotenv").config();
+
+const taskRoutes = require("./routes/taskRoutes");
+
 const app = express();
-const PORT = 4000;
 
+// middlewares
+app.use(cors());
+app.use(express.json());
+app.use(morgan("dev"));
 
-app.get('/', (req, res) => {
-    res.send('Hello wolrd!');
-});
+// routes
+app.use("/tasks", taskRoutes);
 
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
-
-
-
