@@ -3,11 +3,11 @@ const db = require("../db");
 // CREATE TASK
 exports.createTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title } = req.body;
 
     const [result] = await db.query(
-      "INSERT INTO tasks (title, description) VALUES (?, ?)",
-      [title, description]
+      "INSERT INTO tasks (title) VALUES (?)",
+      [title]
     );
 
     res.status(201).json({
@@ -23,6 +23,7 @@ exports.createTask = async (req, res) => {
 exports.getAllTasks = async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM tasks");
+
     res.json(rows);
   } catch (err) {
     res.status(500).json(err);
@@ -35,7 +36,7 @@ exports.getTaskById = async (req, res) => {
     const { id } = req.params;
 
     const [rows] = await db.query(
-      "SELECT * FROM tasks WHERE id = ?",
+      "SELECT * FROM tasks WHERE id=?",
       [id]
     );
 
@@ -49,14 +50,16 @@ exports.getTaskById = async (req, res) => {
 exports.updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, status } = req.body;
+    const { title, status } = req.body;
 
     await db.query(
-      "UPDATE tasks SET title=?, description=?, status=? WHERE id=?",
-      [title, description, status, id]
+      "UPDATE tasks SET title=?, status=? WHERE id=?",
+      [title, status, id]
     );
 
-    res.json({ message: "Task updated" });
+    res.json({
+      message: "Task updated",
+    });
   } catch (err) {
     res.status(500).json(err);
   }
@@ -67,9 +70,14 @@ exports.deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await db.query("DELETE FROM tasks WHERE id=?", [id]);
+    await db.query(
+      "DELETE FROM tasks WHERE id=?",
+      [id]
+    );
 
-    res.json({ message: "Task deleted" });
+    res.json({
+      message: "Task deleted",
+    });
   } catch (err) {
     res.status(500).json(err);
   }

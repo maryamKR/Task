@@ -42,11 +42,7 @@
     </div>
 
     <script>
-      let tasks = [
-        { id: 0, title: "Open the project", completed: false },
-        { id: 1, title: "Start the project", completed: true },
-        { id: 2, title: "Finish the project", completed: false },
-      ];
+      let tasks = [];
 
       const taskForm = document.getElementById("task-form");
       const taskInput = taskForm.querySelector("input");
@@ -55,26 +51,39 @@
       const filterButtons = document.querySelectorAll(".btn-filter");
       let currentFilter = "all";
 
+      async function fetchTasks() {
+        try {
+          const response = await fetch("http://localhost:3000/tasks");
+          tasks = await response.json();
+
+          afficherTaches();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      // gets tasks from Express API/MySQL database and displays them in the browser UI.
       function afficherTaches() {
         todoList.innerHTML = "";
         tasks.forEach(task => {
-          if (currentFilter === "active" && task.completed) return;
-          if (currentFilter === "completed" && !task.completed) return;
+          if (currentFilter === "active" && task.status) return;
+          if (currentFilter === "completed" && !task.status) return;
 
           const li = document.createElement("li");
-          li.className = `flex items-center bg-[#1a1a1a] border border-[#333] rounded-[10px] p-[15px_20px] mb-[10px] text-[#c0a39e] hover:bg-[#222] transition-colors ${task.completed ? 'opacity-55 border-[#2a1a1a] bg-[#1f1414]' : ''}`;
+          li.className = `flex items-center bg-[#1a1a1a] border border-[#333] rounded-[10px] p-[15px_20px] mb-[10px] text-[#c0a39e] hover:bg-[#222] transition-colors ${task.status ? 'opacity-55 border-[#2a1a1a] bg-[#1f1414]' : ''}`;
 
+          // create checkbox
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
-          checkbox.checked = task.completed;
+          checkbox.checked = task.status;
           checkbox.className = "relative shrink-0 w-[18px] h-[18px] rounded-full border-2 border-[#64748b] bg-transparent cursor-pointer mr-[15px] checked:bg-[#ff6347] checked:border-[#ff6347]";
           checkbox.addEventListener("change", () => changerEtat(task.id));
 
           const span = document.createElement("span");
           span.textContent = task.title;
-          span.className = `flex-1 ${task.completed ? 'line-through text-[#777]' : ''}`;
+          span.className = `flex-1 ${task.status ? 'line-through text-[#777]' : ''}`;
 
-          // btn Delete
+          // create button Delete
           const btnSupp = document.createElement("button");
 
           const deleteImg = document.createElement("img");
@@ -89,7 +98,7 @@
           btnSupp.addEventListener("click", () => supprimerTache(task.id));
 
 
-          // btn Edit
+          // create button Edit
           const btnEdit = document.createElement("button");
 
           const editImg = document.createElement("img");
@@ -101,39 +110,107 @@
 
           btnEdit.className = "flex mx-r hover:scale-110 transition-transform";
 
-          btnEdit.addEventListener("click", () => {
-            const nouveauTitre = prompt("Modifier la tâche :", task.title);
-          });
+          // Edit task using API (PATCH request to backend)
+           btnEdit.addEventListener("click", async () => {
+              const nouveauTitre = prompt("Modifier la tâche :", task.title);
+
+              if (!nouveauTitre || !nouveauTitre.trim()) return;
+
+              try {
+                await fetch(`http://localhost:3000/tasks/${task.id}`, {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    title: nouveauTitre,
+                    status: task.status,
+                  }),
+                });
+
+                fetchTasks();
+              } catch (error) {
+                console.log(error);
+              }
+            });
 
           li.append(checkbox, span, btnEdit, btnSupp);
           todoList.appendChild(li);
-
-
-
-
         });
 
-        counter.textContent = tasks.filter(t => !t.completed).length;
+
+        
+
+        counter.textContent = tasks.filter(t => !t.status).length;
       }
 
-      function changerEtat(id) {
-        tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
-        afficherTaches();
+      // Change task status (completed / not completed) using API
+      async function changerEtat(id) {
+        const task = tasks.find(t => t.id === id);
+
+        try {
+          await fetch(`http://localhost:3000/tasks/${id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: task.title,
+              status: !task.status,
+            }),
+          });
+
+          fetchTasks();
+        } catch (error) {
+          console.log(error);
+        }
       }
 
-      function supprimerTache(id) {
-        tasks = tasks.filter(t => t.id !== id);
-        afficherTaches();
+
+
+      // Delete task using API (DELETE request to backend)
+      async function supprimerTache(id) {
+        try {
+          await fetch(`http://localhost:3000/tasks/${id}`, {
+            method: "DELETE",
+          });
+
+          fetchTasks();
+        } catch (error) {
+          console.log(error);
+        }
       }
 
-      taskForm.addEventListener("submit", (e) => {
+
+      
+
+      // // Add new task using API (POST request to backend)
+      taskForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         if (!taskInput.value.trim()) return;
-        tasks.push({ id: Date.now(), title: taskInput.value.trim(), completed: false });
-        taskInput.value = "";
-        afficherTaches();
+
+        try {
+          await fetch("http://localhost:3000/tasks", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: taskInput.value
+            }),
+          });
+
+          taskInput.value = "";
+
+          fetchTasks();
+        } catch (error) {
+          console.log(error);
+        }
       });
 
+
+      // Filter tasks (all / active / completed) and update UI
       filterButtons.forEach((btn, idx) => {
         btn.addEventListener("click", () => {
           filterButtons.forEach(b => b.classList.remove("ring-2", "ring-white")); 
@@ -143,7 +220,7 @@
         });
       });
 
-      afficherTaches();
+      fetchTasks();
     </script>
   </body>
 </html>
