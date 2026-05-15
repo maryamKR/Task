@@ -42,8 +42,6 @@
     </div>
 
     <script>
-      const BASE_API_URL = (window.__BASE_API_URL__ || "").replace(/\/+$/, "");
-      const api = (path) => (BASE_API_URL ? `${BASE_API_URL}${path}` : path);
 
       let tasks = [];
 
@@ -56,7 +54,19 @@
 
       async function fetchTasks() {
         try {
-          const response = await fetch(api("/api/tasks"));
+          const response = await fetch("http://localhost:3000/tasks");
+          tasks = await response.json();
+
+          afficherTaches();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      
+      async function fetchTasks() {
+        try {
+          const response = await fetch("http://localhost:3000/tasks");
           tasks = await response.json();
 
           afficherTaches();
@@ -113,30 +123,30 @@
 
           btnEdit.className = "flex mx-r hover:scale-110 transition-transform";
 
-          // Edit task using API (PATCH request to backend)
-           btnEdit.addEventListener("click", async () => {
-              const nouveauTitre = prompt("Modifier la tâche :", task.title);
+         // Edit task using API (PATCH request to backend)
+          btnEdit.addEventListener("click", async () => {
+  const nouveauTitre = prompt("Modifier la tâche :", task.title);
 
-              if (!nouveauTitre || !nouveauTitre.trim()) return;
+  if (!nouveauTitre || !nouveauTitre.trim()) return;
 
-              try {
-                await fetch(api(`/api/tasks/${task.id}`), {
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    title: nouveauTitre,
-                    status: task.status,
-                  }),
-                });
+  try {
+    await fetch(`http://localhost:3000/tasks/${task.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: nouveauTitre,
+        status: task.status,
+      }),
+    });
 
-                fetchTasks();
-              } catch (error) {
-                console.log(error);
-              }
-            });
-
+    fetchTasks();
+  } catch (error) {
+    console.log(error);
+  }
+});
+          
           li.append(checkbox, span, btnEdit, btnSupp);
           todoList.appendChild(li);
         });
@@ -152,7 +162,7 @@
         const task = tasks.find(t => t.id === id);
 
         try {
-          await fetch(api(`/api/tasks/${id}`), {
+          await fetch(`http://localhost:3000/tasks/${id}`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -174,7 +184,7 @@
       // Delete task using API (DELETE request to backend)
       async function supprimerTache(id) {
         try {
-          await fetch(api(`/api/tasks/${id}`), {
+          await fetch(`http://localhost:3000/tasks/${id}`, {
             method: "DELETE",
           });
 
@@ -194,7 +204,7 @@
         if (!taskInput.value.trim()) return;
 
         try {
-          await fetch(api("/api/tasks"), {
+          await fetch("http://localhost:3000/tasks", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
