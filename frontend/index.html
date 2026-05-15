@@ -42,6 +42,9 @@
     </div>
 
     <script>
+      const BASE_API_URL = (window.__BASE_API_URL__ || "").replace(/\/+$/, "");
+      const api = (path) => (BASE_API_URL ? `${BASE_API_URL}${path}` : path);
+
       let tasks = [];
 
       const taskForm = document.getElementById("task-form");
@@ -53,7 +56,7 @@
 
       async function fetchTasks() {
         try {
-          const response = await fetch("http://localhost:3000/tasks");
+          const response = await fetch(api("/api/tasks"));
           tasks = await response.json();
 
           afficherTaches();
@@ -117,7 +120,7 @@
               if (!nouveauTitre || !nouveauTitre.trim()) return;
 
               try {
-                await fetch(`http://localhost:3000/tasks/${task.id}`, {
+                await fetch(api(`/api/tasks/${task.id}`), {
                   method: "PATCH",
                   headers: {
                     "Content-Type": "application/json",
@@ -149,7 +152,7 @@
         const task = tasks.find(t => t.id === id);
 
         try {
-          await fetch(`http://localhost:3000/tasks/${id}`, {
+          await fetch(api(`/api/tasks/${id}`), {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -171,7 +174,7 @@
       // Delete task using API (DELETE request to backend)
       async function supprimerTache(id) {
         try {
-          await fetch(`http://localhost:3000/tasks/${id}`, {
+          await fetch(api(`/api/tasks/${id}`), {
             method: "DELETE",
           });
 
@@ -191,7 +194,7 @@
         if (!taskInput.value.trim()) return;
 
         try {
-          await fetch("http://localhost:3000/tasks", {
+          await fetch(api("/api/tasks"), {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
