@@ -1,17 +1,18 @@
 # Task MANAGER API 
 
-A REST API for managing tasks, built with node.js, Express, and MySQL.
+A REST API for managing tasks, built with Node.js, Express, MySQL, and Tailwind CSS.
 
 This API allows users to create, read, update, and delete tasks.
 
 
-## Core Functionality
+## Features
 
-- Task Creation : Add a task.
-- List Tasks : Get the entire collection of stored tasks.
-- Locate Task : Retrieve a specific task using its unique ID.
-- Modify Task : Update the title or toggle the status of an existing task.
-- Delete Task : Permanently delete a task from the database.
+- Add a task
+- Display all tasks
+- Update a task
+- Delete a task
+- Mark task as completed
+- Filter tasks (All / Active / Completed)
 
 
 ## Project Structure
@@ -57,6 +58,20 @@ Database
 
 
 
+## Database
+
+Create Database
+```bash
+CREATE DATABASE taskmanager;
+```
+Create Table
+```bash
+CREATE TABLE tasks (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(200) NOT NULL,
+  status BOOLEAN DEFAULT false
+);
+```
 
 
 ## Installation
@@ -104,3 +119,18 @@ Use :
 - `PUT /tasks/:id` : Update a task.
 - `DELETE /tasks/:id` : Delete a task.
 
+
+
+## User Interface
+
+The frontend interface allows users to:
+
+- Add tasks.
+- Edit tasks.
+- Delete tasks.
+- Change task status.
+- Filter tasks dynamically.
+
+
+## Author: 
+- Safa, Ilyase, Maryam
