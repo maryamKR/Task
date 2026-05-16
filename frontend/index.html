@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,22 +20,22 @@
   <body class="bg-[#0f0f0f] text-[#ff6347] flex justify-center p-[90px]">
     <div class="w-full max-w-[500px]">
       <header class="mb-6">
-        <h1 class="text-3xl font-bold">Gestionnaire de Tâches</h1>
-        <p>Tâches restantes : <span id="counter" class="font-bold text-[#ff6347]">0</span></p>
+        <h1 class="text-3xl font-bold">Task Manager</h1>
+        <p>Tasks remaining : <span id="counter" class="font-bold text-[#ff6347]">0</span></p>
       </header>
 
       <form id="task-form" class="flex gap-[10px] mb-5">
-        <input type="text" placeholder="Nouvelle tâche..." 
+        <input type="text" placeholder="New task..." 
                class="flex-1 bg-transparent border border-[#333] text-[#ff6347] p-3 outline-none" />
         <button type="submit" class="bg-[#ff6347] text-[#0f0f0f] rounded-lg px-5 font-bold hover:bg-[#ff4500] transition-colors">
-          Ajouter
+          Add
         </button>
       </form>
 
       <nav id="filters" class="flex gap-[10px] mb-5">
-        <button class="btn-filter active bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">Toutes</button>
-        <button class="btn-filter bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">Actives</button>
-        <button class="btn-filter bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">Terminées</button>
+        <button class="btn-filter active bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">All</button>
+        <button class="btn-filter bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">Active</button>
+        <button class="btn-filter bg-[#ff6347] border border-[#333] text-[#0f0f0f] py-[11px] px-4 rounded-lg font-bold hover:bg-[#ff4500]">Completed</button>
       </nav>
 
       <ul id="todo-list" class="list-none p-0"></ul>
