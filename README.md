@@ -98,9 +98,9 @@ Base URL: `http://localhost:3000`
 Use :
 
 
-- `GET /tasks` : get all tasks, 
-- `GET /tasks/:id` : get a single task,
-- `POST /tasks` : create one, 
-- `PUT /tasks/:id` : update it,
-- `DELETE /tasks/:id` : delete it.
+- `GET /tasks` : Get all tasks.
+- `GET /tasks/:id` : Get a single task.
+- `POST /tasks` : Create a task.
+- `PUT /tasks/:id` : Update a task.
+- `DELETE /tasks/:id` : Delete a task.
 
